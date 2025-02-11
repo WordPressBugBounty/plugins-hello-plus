@@ -4,14 +4,18 @@ namespace HelloPlus\Modules\Theme\Components;
 
 use HelloPlus\Includes\Utils;
 use HelloPlus\Modules\Admin\Classes\Menu\Pages\Setup_Wizard;
-use HelloPlus\Modules\TemplateParts\Documents\Ehp_Footer;
-use HelloPlus\Modules\TemplateParts\Documents\Ehp_Header;
+use HelloPlus\Modules\TemplateParts\Documents\{
+	Ehp_Document_Base,
+	Ehp_Footer,
+	Ehp_Header
+};
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
 class Theme_Overrides {
+
 	public function admin_config( array $config ): array {
 		if ( ! Setup_Wizard::has_site_wizard_been_completed() ) {
 			return $config;
@@ -41,11 +45,44 @@ class Theme_Overrides {
 		return $config;
 	}
 
+	public function localize_settings( $data ) {
+		$data['close_modal_redirect_hello_plus'] = admin_url( 'admin.php?page=' . Utils::get_theme_slug() );
+
+		return $data;
+	}
+
+	public function display_default_header( bool $display ): bool {
+		return $this->display_default_header_footer( $display, 'header' );
+	}
+
+	public function display_default_footer( bool $display ): bool {
+		return $this->display_default_header_footer( $display, 'footer' );
+	}
+
+	protected function display_default_header_footer( bool $display, string $location ): bool {
+		if ( ! Utils::elementor()->preview->is_preview_mode() ) {
+			return $display;
+		}
+
+		$preview_post_id = filter_input( INPUT_GET, 'elementor-preview', FILTER_VALIDATE_INT );
+		$document = Utils::elementor()->documents->get( $preview_post_id );
+
+		if ( $document instanceof Ehp_Document_Base && $document::LOCATION === $location ) {
+			return false;
+		}
+
+		return $display;
+	}
+
 	public function __construct() {
 		add_filter( 'hello-plus-theme/settings/header_footer', '__return_false' );
 		add_filter( 'hello-plus-theme/settings/hello_theme', '__return_false' );
 		add_filter( 'hello-plus-theme/settings/hello_style', '__return_false' );
 		add_filter( 'hello-plus-theme/customizer/enable', Setup_Wizard::has_site_wizard_been_completed() ? '__return_false' : '__return_true' );
 		add_filter( 'hello-plus-theme/rest/admin-config', [ $this, 'admin_config' ] );
+		add_filter( 'elementor/editor/localize_settings', [ $this, 'localize_settings' ] );
+
+		add_filter( 'hello-plus-theme/display-default-header', [ $this, 'display_default_header' ] );
+		add_filter( 'hello-plus-theme/display-default-footer', [ $this, 'display_default_footer' ] );
 	}
 }

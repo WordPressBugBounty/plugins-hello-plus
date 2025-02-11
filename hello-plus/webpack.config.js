@@ -21,18 +21,23 @@ const entryPoints = {
 	'css/helloplus-cta': path.resolve( modulesDir, 'content/assets/scss', 'hello-plus-cta.scss' ),
 	'css/helloplus-flex-hero': path.resolve( modulesDir, 'content/assets/scss', 'hello-plus-flex-hero.scss' ),
 	'js/helloplus-zigzag-fe': path.resolve( modulesDir, 'content/assets/js/frontend', 'hello-plus-zigzag-fe.js' ),
+	'css/helloplus-control-choose-img': path.resolve( modulesDir, 'content/assets/scss', 'choose-img.scss' ),
+	'js/helloplus-control-choose-img': path.resolve( modulesDir, 'content/assets/js', 'editor.js' ),
 
 	// Template Parts module
-	'css/helloplus-template-parts-preview': path.resolve( modulesDir, 'template-parts/assets/scss', 'hello-plus-template-parts-preview.scss' ),
+	'css/helloplus-template-parts-editor': path.resolve( modulesDir, 'template-parts/assets/scss', 'editor.scss' ),
 	'css/helloplus-header': path.resolve( modulesDir, 'template-parts/assets/scss', 'hello-plus-header.scss' ),
 	'css/helloplus-footer': path.resolve( modulesDir, 'template-parts/assets/scss', 'hello-plus-footer.scss' ),
-	'js/helloplus-header': path.resolve( modulesDir, 'template-parts/assets/js', 'hello-plus-header.js' ),
+	'js/helloplus-header-fe': path.resolve( modulesDir, 'template-parts/assets/js', 'frontend.js' ),
 	'js/helloplus-editor': path.resolve( modulesDir, 'template-parts/assets/js', 'editor.js' ),
 
 	// Forms module
 	'css/helloplus-forms': path.resolve( modulesDir, 'forms/assets/scss/widgets', 'hello-plus-forms.scss' ),
 	'js/helloplus-forms-editor': path.resolve( modulesDir, 'forms/assets/js', 'editor.js' ),
 	'js/helloplus-forms-fe': path.resolve( modulesDir, 'forms/assets/js/frontend', 'frontend.js' ),
+
+	// Button
+	'css/helloplus-button': path.resolve( process.cwd(), 'assets/dev/scss', 'ehp-button.scss' ),
 };
 
 module.exports = {
@@ -49,6 +54,10 @@ module.exports = {
 
 			new CopyWebpackPlugin( {
 				patterns: [
+					{
+						from: path.resolve( modulesDir, 'content/assets/images' ),
+						to: imagesPath,
+					},
 					{
 						from: path.resolve( modulesDir, 'forms/assets/images' ),
 						to: imagesPath,

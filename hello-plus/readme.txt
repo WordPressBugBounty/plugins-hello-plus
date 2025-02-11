@@ -3,22 +3,22 @@ Contributors: elemntor
 Tags: elementor, themes, hello themes, hello plus, widgets
 Requires at least: 6.0
 Tested up to: 6.7
-Stable tag: 1.1.3
+Stable tag: 1.2.0
 Requires PHP: 7.4
 License: GPL-3
 License URI: https://www.gnu.org/licenses/gpl-3.0.en.html
 Resources URI: https://github.com/elementor/hello-plus
 
-Hello+ is a free WordPress plugin designed to work seamlessly with Elementor’s Hello Themes. It adds the Plus in the Hello themes.
+Hello+ is a free WordPress plugin designed to work seamlessly with Elementor’s Hello Biz Theme. It adds the Plus in the Hello Biz theme.
 
 == Description ==
 
-Hello+ is a free WordPress plugin designed to work seamlessly with Elementor’s Hello Themes (e.g. [Hello Biz](https://wordpress.org/themes/hello-biz/)).
+Hello+ is a free WordPress plugin designed to work seamlessly with Elementor’s [Hello Biz](https://wordpress.org/themes/hello-biz/) Theme.
 It provides a robust foundation for users to craft unique designs using Elementor’s drag-and-drop site builder and the Hello Themes.
 
 Hello+ offers a guided setup, purpose-built design kits, streamlined management tools,
 and specialized Hello Widgets to deliver a fast and efficient site-building experience.
-Hello+ is designed to complement Elementor’s Hello Themes (e.g. [Hello Biz](https://wordpress.org/themes/hello-biz/)),
+Hello+ is designed to complement Elementor’s [Hello Biz](https://wordpress.org/themes/hello-biz/) Theme,
 an essential companion that must be installed alongside Hello+ for optimal functionality.
 Click [here](https://wordpress.org/themes/hello-biz/) to install Hello Biz.
 
@@ -82,6 +82,12 @@ For documentation and tutorials, visit our [Knowledge Base](https://elementor.co
 > You can report security bugs through the Patchstack Vulnerability Disclosure Program. The Patchstack team help validate, triage and handle any security vulnerabilities. [Report a security vulnerability](https://patchstack.com/database/wordpress/plugin/hello-plus/vdp?pin=yjNmZ24tOxHkDmPZ&vero_id=security%40elementor.com&vero_conv=8O2Z42Yf8LaWeP3OA-siS16QfE_q7upzmkxRQDKcUlDak9P0YG5dwcvRZzblPc1KzxVu3qPDRapdqd9jMv4vmWKMdwo4Iu5PjeWFsSbZPTtq).
 
 == Changelog ==
+= 1.2.0 - 2025-02-11 =
+* New: Hello+ Header & Footer Templates Library
+* Tweak: CTA Widget layout options
+* Tweak: Zigzag Widget layout options
+* Tweak: Unify CTA Buttons functionality across Zigzag, CTA, Hero and Flex-Hero widgets
+
 = 1.1.3 - 2025-01-30 =
 * Fix: Form Lite submission
 
