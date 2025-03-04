@@ -14,6 +14,7 @@ const modulesDir = process.cwd() + '/modules/';
 const entryPoints = {
 	// Admin module:
 	'js/helloplus-onboarding': path.resolve( modulesDir, 'admin/assets/js', 'hello-plus-onboarding.js' ),
+	'js/helloplus-whats-new': path.resolve( modulesDir, 'admin/assets/js', 'hello-plus-whats-new.js' ),
 
 	// Content module
 	'css/helloplus-zigzag': path.resolve( modulesDir, 'content/assets/scss', 'hello-plus-zigzag.scss' ),
@@ -39,6 +40,7 @@ const entryPoints = {
 	// Classes
 	'css/helloplus-button': path.resolve( process.cwd(), 'assets/dev/scss', 'ehp-button.scss' ),
 	'css/helloplus-image': path.resolve( process.cwd(), 'assets/dev/scss', 'ehp-image.scss' ),
+	'css/helloplus-shapes': path.resolve( process.cwd(), 'assets/dev/scss', 'ehp-shapes.scss' ),
 };
 
 module.exports = {
