@@ -4,6 +4,7 @@
 	--header-logo-width: 68px;
 	--header-logo-width-sticky: 34px;
 	--header-site-title-color: #0052FF;
+	--header-site-title-color-hover: #0052FF;
 	--header-buttons-space-between: 16px;
 	--header-logo-order: 0;
 	--header-navigation-breakpoint: 767px;
@@ -95,6 +96,8 @@
 	padding-block-end: var(--header-box-padding-block-end);
 	padding-inline-start: var(--header-box-padding-inline-start);
 	padding-inline-end: var(--header-box-padding-inline-end);
+	position: relative;
+	z-index: $above-layer;
 
 	&.has-box-border {
 		border-bottom: var(--header-box-border-width) solid var(--header-box-border-color);
@@ -118,7 +121,7 @@
 		top: var(--header-float-height);
 		transition: top 0.5s ease-in-out;
 		width: 100%;
-		z-index: 999;
+		z-index: $top-layer;
 	}
 	
 	&.has-behavior-onscroll-scroll-up {
@@ -155,19 +158,39 @@
 		}
 	}
 
+	&__site-link-container {
+		display: flex;
+	}
+
 	&__site-link {
 		align-items: center;
 		display: flex;
+	}
 
-		img {
-			width: var(--header-logo-width);
+	&__site-logo,
+	&__site-link img {
+		width: var(--header-logo-width);
+
+		&.has-border {
+			border: var(--header-logo-border-width) solid var(--header-logo-border-color);
+		}
+
+		&.has-shape-custom {
+			--ehp-shapes-border-radius-block-end: var(--header-logo-border-radius-block-end);
+			--ehp-shapes-border-radius-block-start: var(--header-logo-border-radius-block-start);
+			--ehp-shapes-border-radius-inline-end: var(--header-logo-border-radius-inline-end);
+			--ehp-shapes-border-radius-inline-start: var(--header-logo-border-radius-inline-start);
 		}
 	}
 
 	&__site-title {
 		color: var(--header-site-title-color);
-		font-weight: 600;
 		margin: 0;
+
+		.ehp-header__site-link:hover &,
+		.ehp-header__site-link:focus & {
+			color: var(--header-site-title-color-hover);
+		}
 	}
 
 	&__ctas-container {
@@ -210,7 +233,7 @@
 
 	&__navigation {
 		order: 1;
-		z-index: 999;
+		z-index: $top-layer;
 
 		&[aria-hidden="true"] {
 			display: none;
@@ -296,7 +319,7 @@
 		position: absolute;
 		top: calc(100% + var(--header-box-padding-block-end));
 		width: auto;
-		z-index: 9;
+		z-index: $ninth-layer;
 
 		.menu-item {
 			flex-grow: 1;
@@ -596,7 +619,7 @@
 
 		&.has-align-link-center {
 
-			.ehp-header__site-link {
+			.ehp-header__site-link-container {
 				grid-area: center;
 				justify-content: center;
 			}

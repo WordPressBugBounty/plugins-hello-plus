@@ -3,7 +3,7 @@
 	"slug": "hello-plus",
 	"homepage": "https://elementor.com/",
 	"description": "A quick-start theme for Elementor.",
-	"version": "1.4.1",
+	"version": "1.5.0",
 	"scripts": {
 		"start": "wp-scripts start",
 		"build:dev": "composer update && composer install && wp-scripts build",
@@ -16,7 +16,7 @@
 	},
 	"devDependencies": {
 		"@wordpress/eslint-plugin": "^21.6.0",
-		"@wordpress/scripts": "^30.7.0",
+		"@wordpress/scripts": "^30.13.0",
 		"copy-webpack-plugin": "^12.0.2",
 		"eslint-plugin-babel": "^5.3.1",
 		"eslint-plugin-no-jquery": "^3.0.2",
