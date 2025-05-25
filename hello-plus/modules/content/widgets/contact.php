@@ -11,6 +11,7 @@ use HelloPlus\Modules\Content\Traits\Widget_Repeater_Editable;
 use HelloPlus\Modules\Theme\Module as Theme_Module;
 use HelloPlus\Includes\Utils;
 use HelloPlus\Classes\{
+	Ehp_Column_Structure,
 	Ehp_Full_Height,
 	Ehp_Padding,
 	Ehp_Shapes,
@@ -25,6 +26,7 @@ use Elementor\{
 	Repeater,
 	Settings,
 	Widget_Base,
+	Group_Control_Css_Filter,
 };
 
 use Elementor\Core\Kits\Documents\Tabs\{
@@ -60,6 +62,10 @@ class Contact extends Widget_Base {
 
 	public function get_style_depends(): array {
 		return array_merge( [ 'helloplus-contact' ], Utils::get_widgets_depends() );
+	}
+
+	public function get_custom_help_url(): string {
+		return 'https://go.elementor.com/contact-widget-help';
 	}
 
 	protected function render(): void {
@@ -623,6 +629,43 @@ class Contact extends Widget_Base {
 			]
 		);
 
+		$ehp_column_structure = new Ehp_Column_Structure( $this, [
+			'condition' => [
+				'layout_preset' => [
+					'locate',
+				],
+			],
+		] );
+
+		$ehp_column_structure->add_style_controls();
+
+		$this->add_responsive_control(
+			'map_position_horizontal',
+			[
+				'label' => esc_html__( 'Map Position', 'hello-plus' ),
+				'type' => Controls_Manager::CHOOSE,
+				'options' => [
+					'start' => [
+						'title' => esc_html__( 'Start', 'hello-plus' ),
+						'icon' => 'eicon-h-align-' . ( is_rtl() ? 'right' : 'left' ),
+					],
+					'end' => [
+						'title' => esc_html__( 'End', 'hello-plus' ),
+						'icon' => 'eicon-h-align-' . ( is_rtl() ? 'left' : 'right' ),
+					],
+				],
+				'toggle' => false,
+				'frontend_available' => true,
+				'default' => 'end',
+				'tablet_default' => 'end',
+				'mobile_default' => 'end',
+				'separator' => 'before',
+				'condition' => [
+					'layout_preset' => 'locate',
+				],
+			]
+		);
+
 		$this->add_responsive_control(
 			'content_alignment_locate',
 			[
@@ -663,7 +706,7 @@ class Contact extends Widget_Base {
 				'options' => [
 					'start' => [
 						'title' => esc_html__( 'Start', 'hello-plus' ),
-						'icon' => 'eicon-align-start-h',
+						'icon' => 'eicon-align-' . ( is_rtl() ? 'end' : 'start' ) . '-h',
 					],
 					'center' => [
 						'title' => esc_html__( 'Center', 'hello-plus' ),
@@ -694,7 +737,7 @@ class Contact extends Widget_Base {
 				'options' => [
 					'start' => [
 						'title' => esc_html__( 'Start', 'hello-plus' ),
-						'icon' => 'eicon-align-start-h',
+						'icon' => 'eicon-align-' . ( is_rtl() ? 'end' : 'start' ) . '-h',
 					],
 					'center' => [
 						'title' => esc_html__( 'Center', 'hello-plus' ),
@@ -842,33 +885,6 @@ class Contact extends Widget_Base {
 					'Number' => [
 						'min' => 0,
 					],
-				],
-			]
-		);
-
-		$this->add_responsive_control(
-			'map_position_horizontal',
-			[
-				'label' => esc_html__( 'Map Position', 'hello-plus' ),
-				'type' => Controls_Manager::CHOOSE,
-				'options' => [
-					'start' => [
-						'title' => esc_html__( 'Start', 'hello-plus' ),
-						'icon' => 'eicon-h-align-' . ( is_rtl() ? 'right' : 'left' ),
-					],
-					'end' => [
-						'title' => esc_html__( 'End', 'hello-plus' ),
-						'icon' => 'eicon-h-align-' . ( is_rtl() ? 'left' : 'right' ),
-					],
-				],
-				'toggle' => false,
-				'frontend_available' => true,
-				'default' => 'end',
-				'tablet_default' => 'end',
-				'mobile_default' => 'end',
-				'separator' => 'before',
-				'condition' => [
-					'layout_preset' => 'locate',
 				],
 			]
 		);
@@ -1563,6 +1579,62 @@ class Contact extends Widget_Base {
 				],
 			]
 		);
+
+		$this->start_controls_tabs( 'map_filters_tabs' );
+
+		$this->start_controls_tab(
+			'map_filters_normal_tab',
+			[
+				'label' => esc_html__( 'Normal', 'hello-plus' ),
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Css_Filter::get_type(),
+			[
+				'name' => 'map_css_filters',
+				'selector' => '{{WRAPPER}} .ehp-contact__map',
+			]
+		);
+
+		$this->end_controls_tab();
+
+		$this->start_controls_tab(
+			'map_filters_hover_tab',
+			[
+				'label' => esc_html__( 'Hover', 'hello-plus' ),
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Css_Filter::get_type(),
+			[
+				'name' => 'map_css_filters_hover',
+				'selector' => '{{WRAPPER}} .ehp-contact__map:hover',
+			]
+		);
+
+		$this->add_control(
+			'map_css_filters_hover_transition_duration',
+			[
+				'label' => esc_html__( 'Transition Duration (s)', 'hello-plus' ),
+				'type' => Controls_Manager::SLIDER,
+				'range' => [
+					'px' => [
+						'min' => 0,
+						'max' => 3,
+						'step' => 0.1,
+					],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .ehp-contact__map' => 'transition-duration: {{SIZE}}s',
+				],
+			]
+		);
+
+		$this->end_controls_tab();
+
+		$this->end_controls_tabs();
 
 		$this->add_control(
 			'show_map_border',

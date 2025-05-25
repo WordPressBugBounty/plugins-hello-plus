@@ -25,6 +25,7 @@ use HelloPlus\Modules\Content\Classes\{
 };
 use HelloPlus\Classes\{
 	Ehp_Button,
+	Ehp_Column_Structure,
 	Ehp_Full_Height,
 	Ehp_Image,
 	Ehp_Padding,
@@ -56,6 +57,10 @@ class CTA extends Widget_Base {
 
 	public function get_style_depends(): array {
 		return array_merge( [ 'helloplus-cta' ], Utils::get_widgets_depends() );
+	}
+
+	public function get_custom_help_url(): string {
+		return 'https://go.elementor.com/cta-widget-help';
 	}
 
 	protected function render(): void {
@@ -105,6 +110,7 @@ class CTA extends Widget_Base {
 				'type' => Choose_Img_Control::CONTROL_NAME,
 				'default' => 'focus',
 				'label_block' => true,
+				'toggle' => false,
 				'columns' => 2,
 				'options' => [
 					'focus' => [
@@ -250,7 +256,7 @@ class CTA extends Widget_Base {
 				'options' => [
 					'start' => [
 						'title' => esc_html__( 'Start', 'hello-plus' ),
-						'icon' => 'eicon-align-start-h',
+						'icon' => 'eicon-align-' . ( is_rtl() ? 'end' : 'start' ) . '-h',
 					],
 					'center' => [
 						'title' => esc_html__( 'Center', 'hello-plus' ),
@@ -330,6 +336,16 @@ class CTA extends Widget_Base {
 			]
 		);
 
+		$ehp_column_structure = new Ehp_Column_Structure( $this, [
+			'condition' => [
+				'layout_preset' => [
+					'showcase',
+				],
+			],
+		] );
+
+		$ehp_column_structure->add_style_controls();
+
 		$this->add_responsive_control(
 			'image_horizontal_position',
 			[
@@ -350,6 +366,7 @@ class CTA extends Widget_Base {
 				'default' => 'start',
 				'tablet_default' => 'start',
 				'mobile_default' => 'start',
+				'separator' => 'before',
 				'condition' => [
 					'layout_preset' => 'showcase',
 				],
