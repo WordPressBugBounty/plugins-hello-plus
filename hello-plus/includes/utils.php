@@ -10,12 +10,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  **/
 class Utils {
 
-	private static ?bool $elementor_installed = null;
-
-	private static ?bool $elementor_active = null;
-
-	public static function elementor(): \Elementor\Plugin {
-		return \Elementor\Plugin::$instance;
+	public static function elementor(): ?\Elementor\Plugin {
+		return class_exists( '\Elementor\Plugin' ) ? \Elementor\Plugin::instance() : null;
 	}
 
 	public static function has_pro(): bool {
@@ -54,23 +50,25 @@ class Utils {
 	}
 
 	public static function is_elementor_active(): bool {
-		if ( null === self::$elementor_active ) {
-			self::$elementor_active = defined( 'ELEMENTOR_VERSION' );
+		static $elementor_active = null;
+		if ( is_null( $elementor_active ) ) {
+			$elementor_active = defined( 'ELEMENTOR_VERSION' );
 		}
 
-		return self::$elementor_active;
+		return $elementor_active;
 	}
 
 	public static function is_elementor_installed(): bool {
-		if ( null === self::$elementor_installed ) {
-			self::$elementor_installed = file_exists( WP_PLUGIN_DIR . '/elementor/elementor.php' );
+		static $elementor_installed = null;
+		if ( is_null( $elementor_installed ) ) {
+			$elementor_installed = file_exists( WP_PLUGIN_DIR . '/elementor/elementor.php' );
 		}
 
-		return self::$elementor_installed;
+		return $elementor_installed;
 	}
 
 	public static function get_current_post_id(): int {
-		if ( isset( self::elementor()->documents ) && self::elementor()->documents->get_current() ) {
+		if ( self::elementor() && isset( self::elementor()->documents ) && self::elementor()->documents->get_current() ) {
 			return self::elementor()->documents->get_current()->get_main_id();
 		}
 
@@ -171,10 +169,27 @@ class Utils {
 			class_exists( '\ElementorPro\Modules\Forms\Submissions\Actions\Save_To_Database' ) &&
 			class_exists( '\ElementorPro\License\API' ) &&
 			class_exists( '\ElementorPro\Modules\Forms\Submissions\Component' ) &&
-			\ElementorPro\License\API::is_licence_has_feature(
-				\ElementorPro\Modules\Forms\Submissions\Component::NAME,
-				\ElementorPro\License\APi::BC_VALIDATION_CALLBACK
+			self::is_licence_has_feature_compatible(
+				\ElementorPro\Modules\Forms\Submissions\Component::NAME
 			);
+	}
+
+	private static function is_licence_has_feature_compatible( $feature ) {
+		$method = new \ReflectionMethod(
+			\ElementorPro\License\API::class, 'is_licence_has_feature'
+		);
+		$num_params = $method->getNumberOfParameters();
+
+		if ( $num_params > 1 ) {
+			return \ElementorPro\License\API::is_licence_has_feature(
+				$feature,
+				\ElementorPro\License\API::BC_VALIDATION_CALLBACK
+			);
+		} else {
+			return \ElementorPro\License\API::is_licence_has_feature(
+				$feature
+			);
+		}
 	}
 
 	public static function get_widgets_depends(): array {
