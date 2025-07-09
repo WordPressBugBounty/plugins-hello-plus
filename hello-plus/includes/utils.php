@@ -30,6 +30,7 @@ class Utils {
 				return true;
 			}
 		}
+
 		return false;
 	}
 
@@ -214,5 +215,35 @@ class Utils {
 		$pro_part = self::maybe_has_pro_location_docs( $part );
 		$first_pro_part_id  = array_key_first( $pro_part );
 		return ! empty( $first_pro_part_id ) ? $first_pro_part_id : false;
+	}
+
+	public static function is_test_environment(): bool {
+
+		if ( defined( 'WP_TESTS_DOMAIN' ) ) {
+			return true;
+		}
+
+		if ( getenv( 'TEST_PARALLEL_INDEX' ) !== false ) {
+			return true;
+		}
+
+		$wp_env = getenv( 'WP_ENV' );
+		if ( $wp_env && in_array( strtolower( $wp_env ), [ 'test', 'testing', 'playwright' ], true ) ) {
+			return true;
+		}
+
+		if ( defined( 'WP_TESTS_CONFIG_FILE_PATH' ) || defined( 'WP_PHPUNIT__TESTS_CONFIG' ) ) {
+			return true;
+		}
+
+		if (
+			defined( 'WP_DEBUG' ) &&
+			defined( 'WP_DEBUG_LOG' ) &&
+			filter_input( INPUT_SERVER, 'HTTP_HOST', FILTER_SANITIZE_URL ) === 'localhost:8888'
+		) {
+			return true;
+		}
+
+		return false;
 	}
 }

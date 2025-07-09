@@ -20,10 +20,14 @@ export default class TemplatesModule extends elementorModules.editor.utils.Modul
 		];
 
 		types.forEach( ( type ) => {
-			window.addEventListener( type, this.redirectToHelloPlus );
+			window.addEventListener( type, this.redirectToHelloPlus.bind( this ) );
 		} );
 
 		window.templatesModule = this;
+	}
+
+	isElementorDomain() {
+		return ehpTemplatePartsEditorSettings?.isElementorDomain;
 	}
 
 	preventClosingModal( close, component ) {
@@ -37,17 +41,18 @@ export default class TemplatesModule extends elementorModules.editor.utils.Modul
 	}
 
 	filterBehviors( behaviors ) {
-		if ( this.isEhpDocument() && this.notElementorDomain() ) {
+		if ( this.isElementorDomain() ) {
+			return behaviors;
+		}
+
+		if ( this.isEhpDocument() ) {
 			const { contextMenu: { groups } } = behaviors;
 			behaviors.contextMenu.groups = groups
 				.map( this.filterOutUnsupportedActions() )
 				.filter( ( group ) => group.actions.length );
 		}
-		return behaviors;
-	}
 
-	notElementorDomain() {
-		return ! ehpTemplatePartsEditorSettings.isElementorDomain;
+		return behaviors;
 	}
 
 	setSourceAsRemote( isRemote, activeSource ) {
@@ -59,6 +64,10 @@ export default class TemplatesModule extends elementorModules.editor.utils.Modul
 	}
 
 	redirectToHelloPlus() {
+		if ( this.isElementorDomain() ) {
+			return;
+		}
+
 		$e.internal( 'document/save/set-is-modified', { status: false } );
 		window.location.href = elementor.config.close_modal_redirect_hello_plus + elementor.config.document.type;
 	}
@@ -69,7 +78,7 @@ export default class TemplatesModule extends elementorModules.editor.utils.Modul
 	}
 
 	resetCommonControls( commonControls, widgetType ) {
-		if ( [ 'ehp-footer', 'ehp-header' ].includes( widgetType ) ) {
+		if ( [ 'ehp-footer', 'ehp-header', 'ehp-flex-footer' ].includes( widgetType ) ) {
 			return null;
 		}
 
