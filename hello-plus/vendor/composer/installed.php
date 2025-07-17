@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'elementor/hello-plus',
-        'pretty_version' => '1.7.1.x-dev',
-        'version' => '1.7.1.9999999-dev',
-        'reference' => '4bc02af12946f60e1069657c8a7929a763507138',
+        'pretty_version' => '1.7.2.x-dev',
+        'version' => '1.7.2.9999999-dev',
+        'reference' => 'c20146843c0ea28845e27cda10b896bc5f913540',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,9 +11,9 @@
     ),
     'versions' => array(
         'elementor/hello-plus' => array(
-            'pretty_version' => '1.7.1.x-dev',
-            'version' => '1.7.1.9999999-dev',
-            'reference' => '4bc02af12946f60e1069657c8a7929a763507138',
+            'pretty_version' => '1.7.2.x-dev',
+            'version' => '1.7.2.9999999-dev',
+            'reference' => 'c20146843c0ea28845e27cda10b896bc5f913540',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
