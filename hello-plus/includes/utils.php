@@ -25,13 +25,16 @@ class Utils {
 			'elementor.red',
 		];
 
+		$is_elementor_domain = false;
+
 		foreach ( $allowed_domains as $domain ) {
 			if ( str_ends_with( $current_domain, $domain ) ) {
-				return true;
+								$is_elementor_domain = true;
+								break;
 			}
 		}
 
-		return false;
+		return $is_elementor_domain;
 	}
 
 	public static function has_hello_biz(): bool {

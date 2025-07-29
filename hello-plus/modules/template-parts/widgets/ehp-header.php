@@ -104,10 +104,10 @@ class Ehp_Header extends Ehp_Widget_Base {
 		$this->add_content_site_logo_section();
 		$this->add_content_navigation_section();
 		$this->add_content_contact_buttons_section();
+		$this->add_content_cta_section();
 		if ( current_theme_supports( 'hello-plus-menu-cart' ) ) {
 			$this->add_content_menu_cart_section();
 		}
-		$this->add_content_cta_section();
 	}
 
 	protected function add_style_tab() {
@@ -217,6 +217,27 @@ class Ehp_Header extends Ehp_Widget_Base {
 					),
 				]
 			);
+
+			foreach ( $this->get_empty_menus() as $menu_id => $menu_slug ) {
+
+				$this->add_control(
+					'empty_menu_alert_' . $menu_id,
+					[
+						'type' => Controls_Manager::ALERT,
+						'alert_type' => 'info',
+						'content' => sprintf(
+							/* translators: 1: Link opening tag, 2: Link closing tag. */
+							esc_html__( 'This menu has no items. Select another menu, or %1$sadd items%2$s. Then refresh this page. ', 'hello-plus' ),
+							sprintf( '<a href="%s" target="_blank">', self_admin_url( 'nav-menus.php?action=edit&menu=' . $menu_id ) ),
+							'</a>'
+						),
+						'separator' => 'after',
+						'condition' => [
+							'navigation_menu' => $menu_slug,
+						],
+					]
+				);
+			}
 
 			$this->add_control(
 				'navigation_icon_label',
@@ -866,15 +887,6 @@ class Ehp_Header extends Ehp_Widget_Base {
 		);
 
 		$this->add_control(
-			'style_responsive_menu_alert',
-			[
-				'type' => Controls_Manager::ALERT,
-				'alert_type' => 'info',
-				'content' => esc_html__( 'To preview, select a responsive viewport icon.', 'hello-plus' ),
-			]
-		);
-
-		$this->add_control(
 			'style_responsive_menu_align',
 			[
 				'label' => esc_html__( 'Text Align', 'hello-plus' ),
@@ -1042,8 +1054,40 @@ class Ehp_Header extends Ehp_Widget_Base {
 			[
 				'label' => esc_html__( 'Contact Button', 'hello-plus' ),
 				'tab' => Controls_Manager::TAB_STYLE,
-				'condition' => [
-					'contact_buttons_show' => 'yes',
+				'conditions' => [
+					'relation' => 'or',
+					'terms' => [
+						[
+							'relation' => 'and',
+							'terms' => [
+								[
+									'name' => 'layout_preset_select',
+									'operator' => '!==',
+									'value' => 'connect',
+								],
+								[
+									'name' => 'contact_buttons_show',
+									'operator' => '==',
+									'value' => 'yes',
+								],
+							],
+						],
+						[
+							'relation' => 'and',
+							'terms' => [
+								[
+									'name' => 'layout_preset_select',
+									'operator' => '==',
+									'value' => 'connect',
+								],
+								[
+									'name' => 'contact_buttons_show_connect',
+									'operator' => '==',
+									'value' => 'yes',
+								],
+							],
+						],
+					],
 				],
 			]
 		);
@@ -1197,6 +1241,9 @@ class Ehp_Header extends Ehp_Widget_Base {
 				],
 				'default' => 'navbar',
 				'separator' => 'before',
+				'condition' => [
+					'navigation_breakpoint' => [ 'mobile-portrait', 'tablet-portrait' ],
+				],
 			]
 		);
 
@@ -1207,7 +1254,7 @@ class Ehp_Header extends Ehp_Widget_Base {
 		$this->start_controls_section(
 			'style_cta',
 			[
-				'label' => esc_html__( 'Call to Action', 'hello-plus' ),
+				'label' => esc_html__( 'CTA Button', 'hello-plus' ),
 				'tab' => Controls_Manager::TAB_STYLE,
 			]
 		);
