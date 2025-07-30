@@ -3,7 +3,7 @@
         'name' => 'elementor/hello-plus',
         'pretty_version' => '1.7.x-dev',
         'version' => '1.7.9999999.9999999-dev',
-        'reference' => '91db9bfc8014f862967bbf62be916a25ed6ee323',
+        'reference' => 'd858856d402ff9d54e9fa279788fe9413d3e09b7',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         'elementor/hello-plus' => array(
             'pretty_version' => '1.7.x-dev',
             'version' => '1.7.9999999.9999999-dev',
-            'reference' => '91db9bfc8014f862967bbf62be916a25ed6ee323',
+            'reference' => 'd858856d402ff9d54e9fa279788fe9413d3e09b7',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
