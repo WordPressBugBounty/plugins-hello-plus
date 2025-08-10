@@ -1,6 +1,7 @@
 #!/bin/bash
 set -eox pipefail
 
+wp plugin install wordpress-importer --activate
 wp plugin activate elementor
 wp theme activate hello-biz
 wp plugin activate hello-plus
@@ -18,9 +19,12 @@ wp option set elementor_onboarded true
 
 # Add user meta so the announcement popup will not be displayed - ED-9723
 for id in $(wp user list --field=ID)
-do wp user meta add "$id" "announcements_user_counter" 999
+	do wp user meta add "$id" "announcements_user_counter" 999
+	wp user meta add "$id" "elementor_onboarded" "a:1:{s:27:\"ai-get-started-announcement\";b:1;}"
 done
 
 wp cache flush
 wp rewrite flush --hard
 wp elementor flush-css
+wp wc tool run install_pages --user=admin
+wp import ./wp-content/plugins/hello-plus/tests/playwright/sample-data/sample_products_with_acf_meta.xml --authors=skip --quiet --allow-root
