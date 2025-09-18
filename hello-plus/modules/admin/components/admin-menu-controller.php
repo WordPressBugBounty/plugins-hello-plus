@@ -18,20 +18,26 @@ class Admin_Menu_Controller {
 		if ( Utils::has_hello_elementor_theme() ) {
 			return;
 		}
+
+		$show_menu = filter_input( INPUT_GET, 'show-menu', FILTER_UNSAFE_RAW );
+
+		if ( 'true' !== $show_menu && Utils::has_at_least_one_kit() ) {
+			return;
+		}
+
 		$setup_wizard = new Setup_Wizard();
 		$setup_wizard->register_setup_wizard_page( $parent_slug );
 	}
 
 	public function activate() {
-		if ( ! Setup_Wizard::has_site_wizard_been_completed() ) {
-			set_transient( self::SETUP_WIZARD_TRANSIENT_NAME, true );
-		}
+		set_transient( self::SETUP_WIZARD_TRANSIENT_NAME, true );
 	}
 
 	public function redirect_on_first_activation() {
 		if ( empty( get_transient( self::SETUP_WIZARD_TRANSIENT_NAME ) ) ) {
 			return;
 		}
+
 		if ( ! is_admin() ) {
 			return;
 		}
@@ -46,7 +52,20 @@ class Admin_Menu_Controller {
 			return;
 		}
 
-		wp_safe_redirect( self_admin_url( 'admin.php?page=' . Setup_Wizard::SETUP_WIZARD_PAGE_SLUG ) );
+		if ( Utils::has_at_least_one_kit() ) {
+			wp_safe_redirect(
+				add_query_arg(
+					[
+						'page' => Utils::get_theme_slug(),
+						'install-confirmation' => 'true',
+					],
+					self_admin_url( 'admin.php' )
+				)
+			);
+		} else {
+			wp_safe_redirect( self_admin_url( 'admin.php?page=' . Setup_Wizard::SETUP_WIZARD_PAGE_SLUG ) );
+		}
+
 		exit;
 	}
 

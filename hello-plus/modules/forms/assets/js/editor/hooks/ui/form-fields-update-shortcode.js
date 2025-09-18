@@ -4,7 +4,7 @@ export class FormFieldsUpdateShortCode extends $e.modules.hookUI.After {
 	}
 
 	getId() {
-		return 'elementor-pro-forms-fields-update-shortcode';
+		return 'ehp-forms-fields-update-shortcode';
 	}
 
 	getContainerType() {

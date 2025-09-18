@@ -18,6 +18,8 @@ export const Preview = ( { kit, setPreviewKit } ) => {
 		elementorKitSettings,
 	} = useAdminContext();
 
+	const returnUrlWithMenu = returnUrl + '&show-menu=true';
+
 	const { manifest: { site = '', name, description, content: { page = {} } }, title } = kit;
 	const [ previewUrl, setPreviewUrl ] = useState( site );
 
@@ -51,7 +53,7 @@ export const Preview = ( { kit, setPreviewKit } ) => {
 
 							const url = '/import/process' +
 								`?id=${ kit._id }` +
-								`&file_url=${ encodeURIComponent( response.data.download_link ) }&return_to=${ encodeURIComponent( returnUrl ) }` +
+								`&file_url=${ encodeURIComponent( response.data.download_link ) }&return_to=${ encodeURIComponent( returnUrlWithMenu ) }` +
 								`&nonce=${ response.meta.nonce }&referrer=kit-library&action_type=apply-all`;
 
 							window.location.href = `${ applyKitBaseUrl }#${ url }`;
@@ -94,7 +96,7 @@ export const Preview = ( { kit, setPreviewKit } ) => {
 					description={ description }
 					pages={ pages }
 					kit={ kit }
-					/>
+				/>
 				) }
 
 			</Box>

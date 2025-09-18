@@ -25,7 +25,7 @@ $elementor_plugin_path = 'elementor/elementor.php';
 $active_plugins = [ $elementor_plugin_path, PLUGIN_PATH ];
 
 // Activates this plugin in WordPress so it can be tested.
-$GLOBALS[ 'wp_tests_options' ] = [
+$GLOBALS['wp_tests_options'] = [
 	'active_plugins' => $active_plugins,
 	'template'       => 'twentytwentyone',
 	'stylesheet'     => 'twentytwentyone',
@@ -76,8 +76,6 @@ function initialize_elementor_plugin( $plugin_class ) {
 }
 
 $plugin_instance = initialize_elementor_plugin( 'Elementor\Plugin' );
-
-$plugin_instance->initialize_container();
 
 do_action( 'init' );
 do_action( 'wp_loaded' );

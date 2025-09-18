@@ -14,7 +14,6 @@ use Elementor\{
 };
 
 use Elementor\Modules\DynamicTags\Module as TagsModule;
-use Elementor\Modules\Promotions\Controls\Promotion_Control;
 use Elementor\Repeater;
 use HelloPlus\Includes\Utils;
 
@@ -905,22 +904,14 @@ class Ehp_Form extends Form_Base {
 			]
 		);
 
-		$this->add_control(
-			'submission_divider',
-			[
-				'type' => Controls_Manager::DIVIDER,
-			]
-		);
-
-		if ( ! Utils::are_submissions_enabled() ) {
+		if ( Utils::are_submissions_enabled() ) {
 			$this->add_control(
-				'collect_submit_promotion',
+				'submission_divider',
 				[
-					'label' => esc_html__( 'Collect Submissions', 'hello-plus' ),
-					'type' => Promotion_Control::TYPE,
+					'type' => Controls_Manager::DIVIDER,
 				]
 			);
-		} else {
+
 			$this->add_control(
 				'submit_actions',
 				[
@@ -936,6 +927,8 @@ class Ehp_Form extends Form_Base {
 
 		$this->end_controls_section();
 	}
+
+
 
 	protected function add_style_layout_section(): void {
 		$this->start_controls_section(

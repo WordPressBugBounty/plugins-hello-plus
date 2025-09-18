@@ -30,7 +30,7 @@ export const TobBarPreview = ( { onClickBack, onClickLeftButton, onClickRightBut
 				{ overview ? __( 'View Demo', 'hello-plus' ) : __( 'Overview', 'hello-plus' ) }
 			</Button>
 			<Button variant="contained" color="primary" onClick={ onClickRightButton }>
-				{ __( 'Apply Kit', 'hello-plus' ) }
+				{ __( 'Apply', 'hello-plus' ) }
 			</Button>
 		</Stack>
 	</Stack>;

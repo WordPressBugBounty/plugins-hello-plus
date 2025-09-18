@@ -31,9 +31,12 @@ export const GetStarted = ( { message, buttonText, onClick, severity, title, des
 					<Typography color="text.tertiary" variant="body2" align="center">
 						{ disclaimer }
 					</Typography>
-					<Link variant="body2" color="info.main" ml={ 1 } underline="hover" target="_blank" href={ termsUrl }>
+					<Link variant="body2" color="info.main" ml={ 0.5 } underline="hover" target="_blank" href={ termsUrl }>
 						{ termsText }
 					</Link>
+					{ !! termsText && (
+						<Typography color="text.tertiary" variant="body2" align="center">.</Typography>
+					) }
 				</Stack>
 			</Stack>
 		</>

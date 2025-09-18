@@ -3,7 +3,7 @@ Contributors: elemntor
 Tags: elementor, themes, hello themes, hello plus, widgets
 Requires at least: 6.0
 Tested up to: 6.8
-Stable tag: 1.7.6
+Stable tag: 1.7.7
 Requires PHP: 7.4
 License: GPL-3
 License URI: https://www.gnu.org/licenses/gpl-3.0.en.html
@@ -79,6 +79,13 @@ For documentation and tutorials, visit our [Knowledge Base](https://elementor.co
 > You can report security bugs through the Patchstack Vulnerability Disclosure Program. The Patchstack team help validate, triage and handle any security vulnerabilities. [Report a security vulnerability](https://patchstack.com/database/wordpress/plugin/hello-plus/vdp?pin=yjNmZ24tOxHkDmPZ&vero_id=security%40elementor.com&vero_conv=8O2Z42Yf8LaWeP3OA-siS16QfE_q7upzmkxRQDKcUlDak9P0YG5dwcvRZzblPc1KzxVu3qPDRapdqd9jMv4vmWKMdwo4Iu5PjeWFsSbZPTtq).
 
 == Changelog ==
+
+= 1.7.7 - 2025-09-18 =
+* Fix: Fix error in Pro Forms widget when Hello+ is installed
+* Fix: Fix parent menu behavior when menu has subitems
+* Tweak: Prevent triggering of onboarding flow if a website template is installed
+* Fix: Hello+ Header box padding doesn't affect the responsive menu anymore
+* Fix: Prevent WooCommerce onboarding flow from starting when installing it through a kit
 
 = 1.7.6 - 2025-08-10 =
 * Tweak: Fix behavior of Hello+ Header

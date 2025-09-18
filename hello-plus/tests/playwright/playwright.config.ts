@@ -21,7 +21,7 @@ export default defineConfig( {
 		toHaveScreenshot: { maxDiffPixelRatio: 0.03 },
 	},
 	forbidOnly: !! process.env.CI,
-	retries: process.env.CI ? 9 : 0,
+	retries: process.env.CI ? 5 : 0,
 	workers: process.env.CI ? 2 : 1,
 	fullyParallel: false,
 	reporter: process.env.CI
@@ -33,8 +33,8 @@ export default defineConfig( {
 		},
 		headless: !! process.env.CI,
 		ignoreHTTPSErrors: true,
-		actionTimeout: 30000, // Increase from the default
-		navigationTimeout: 45000, // Increase from the default
+		actionTimeout: process.env.CI ? 30000 : 25000,
+		navigationTimeout: process.env.CI ? 45000 : 25000,
 		trace: 'retain-on-failure',
 		video: process.env.CI ? 'retain-on-failure' : 'off',
 		baseURL: process.env.BASE_URL ||

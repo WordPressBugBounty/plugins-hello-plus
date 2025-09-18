@@ -122,7 +122,7 @@ class Onboarding_Settings {
 			[
 				'title' => __( 'Welcome! Let\'s create your website.', 'hello-plus' ),
 				'description' => __( 'Thanks for installing the Hello Biz theme by Elementor. This setup wizard will help you create a website in moments.', 'hello-plus' ),
-				'disclaimer' => __( 'By clicking "Start building my website", I agree to install & activate the Elementor plugin. I accept the Elementor', 'hello-plus' ),
+				'disclaimer' => __( 'By clicking "Start building my website," I agree to install and activate Elementor. I accept the Elementor', 'hello-plus' ),
 				'termsUrl' => 'https://elementor.com/terms/',
 				'termsText' => __( 'Terms and Conditions', 'hello-plus' ),
 				'buttonText' => __( 'Start building my website', 'hello-plus' ),
@@ -156,8 +156,8 @@ class Onboarding_Settings {
 		$install_kit_text = apply_filters(
 			'hello-plus/onboarding/install-kit-text',
 			[
-				'title' => __( 'Choose your website template kit', 'hello-plus' ),
-				'description' => __( 'Explore our versatile website kits to find one that fits your style or project.', 'hello-plus' ),
+				'title' => __( 'Choose your website template', 'hello-plus' ),
+				'description' => __( 'Explore our versatile website templates to find one that fits your style or project.', 'hello-plus' ),
 			]
 		);
 

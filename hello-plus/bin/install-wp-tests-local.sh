@@ -23,9 +23,9 @@ DB_PASS=${DB_PASS:-"admin"}
 DB_HOST=${DB_HOST:-"127.0.0.1"}
 WP_VERSION=${WP_VERSION:-"latest"}
 
-WP_TESTS_DIR=${WP_TESTS_DIR-/tmp/wordpress-tests-lib}
-WP_CORE_DIR=${WP_CORE_DIR-/tmp/wordpress/}
-ELEMENTOR_PLUGIN_DIR=${ELEMENTOR_PLUGIN_DIR-/tmp/wordpress/wp-content/plugins}
+WP_TESTS_DIR=${WP_TESTS_DIR-"$WORKING_DIR/tmp/wordpress-tests-lib"}
+WP_CORE_DIR=${WP_CORE_DIR-"$WORKING_DIR/tmp/wordpress/"}
+ELEMENTOR_PLUGIN_DIR=${ELEMENTOR_PLUGIN_DIR-"$WORKING_DIR/tmp/"}
 
 
 # Download util with better error handling
@@ -92,7 +92,7 @@ install_wp() {
 	download https://wordpress.org/${ARCHIVE_NAME}.tar.gz  /tmp/wordpress.tar.gz
 	tar --strip-components=1 -zxmf /tmp/wordpress.tar.gz -C "$WP_CORE_DIR"
 
-	download https://raw.github.com/markoheijnen/wp-mysqli/master/db.php "$WP_CORE_DIR/wp-content/db.php"
+	download https://raw.githubusercontent.com/markoheijnen/wp-mysqli/master/db.php "$WP_CORE_DIR/wp-content/db.php"
 }
 
 install_test_suite() {
@@ -104,21 +104,21 @@ install_test_suite() {
 	fi
 
 	# set up testing suite if it doesn't yet exist
-	if [ ! -d "$WP_TESTS_UTILS_DIR" ]; then
+	if [ ! -d "$WP_TESTS_DIR" ]; then
 		# set up testing suite
-		mkdir -p "$WP_TESTS_UTILS_DIR"/includes
-		svn co --quiet https://develop.svn.wordpress.org/${WP_TESTS_TAG}/tests/phpunit/includes/ "$WP_TESTS_UTILS_DIR/includes/"
+		mkdir -p "$WP_TESTS_DIR"/includes
+		svn co --quiet https://develop.svn.wordpress.org/${WP_TESTS_TAG}/tests/phpunit/includes/ "$WP_TESTS_DIR/includes/"
 	fi
 
-	cd "$WP_TESTS_UTILS_DIR"
+	cd "$WP_TESTS_DIR"
 
 	if [ ! -f wp-tests-config.php ]; then
-		download https://develop.svn.wordpress.org/${WP_TESTS_TAG}/wp-tests-config-sample.php "$WP_TESTS_UTILS_DIR/wp-tests-config.php"
-		sed $ioption "s:dirname( __FILE__ ) . '/src/':'$WP_CORE_DIR':" "$WP_TESTS_UTILS_DIR"/wp-tests-config.php
-		sed $ioption "s/youremptytestdbnamehere/$DB_NAME/" "$WP_TESTS_UTILS_DIR"/wp-tests-config.php
-		sed $ioption "s/yourusernamehere/$DB_USER/" "$WP_TESTS_UTILS_DIR"/wp-tests-config.php
-		sed $ioption "s/yourpasswordhere/$DB_PASS/" "$WP_TESTS_UTILS_DIR"/wp-tests-config.php
-		sed $ioption "s|localhost|${DB_HOST}|" "$WP_TESTS_UTILS_DIR"/wp-tests-config.php
+		download https://develop.svn.wordpress.org/${WP_TESTS_TAG}/wp-tests-config-sample.php "$WP_TESTS_DIR/wp-tests-config.php"
+		sed $ioption "s:dirname( __FILE__ ) . '/src/':'$WP_CORE_DIR':" "$WP_TESTS_DIR"/wp-tests-config.php
+		sed $ioption "s/youremptytestdbnamehere/$DB_NAME/" "$WP_TESTS_DIR"/wp-tests-config.php
+		sed $ioption "s/yourusernamehere/$DB_USER/" "$WP_TESTS_DIR"/wp-tests-config.php
+		sed $ioption "s/yourpasswordhere/$DB_PASS/" "$WP_TESTS_DIR"/wp-tests-config.php
+		sed $ioption "s|localhost|${DB_HOST}|" "$WP_TESTS_DIR"/wp-tests-config.php
 	fi
 }
 
@@ -148,7 +148,7 @@ install_elementor_plugin() {
 	rm -rf ${ELEMENTOR_PLUGIN_DIR}/elementor
 	
 	# Download the plugin
-	local zip_file="/tmp/elementor.zip"
+	local zip_file="$WORKING_DIR/tmp/elementor.zip"
 	rm -f "$zip_file"
 	
 	echo "Downloading Elementor from WordPress.org..."
@@ -165,7 +165,7 @@ install_elementor_plugin() {
 	
 	# Extract the plugin
 	echo "Extracting Elementor plugin..."
-	if ! unzip -q "$zip_file" -d ${ELEMENTOR_PLUGIN_DIR}; then
+	if ! unzip -q "$zip_file" -d "${ELEMENTOR_PLUGIN_DIR}"; then
 		echo "Error: Failed to extract Elementor plugin"
 		rm -f "$zip_file"
 		exit 1
@@ -179,5 +179,5 @@ install_elementor_plugin() {
 check_for_svn
 install_wp
 install_test_suite
-install_db
 install_elementor_plugin
+install_db

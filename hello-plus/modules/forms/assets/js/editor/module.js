@@ -17,8 +17,8 @@ export default class FormsModule extends elementorModules.editor.utils.Module {
 			acceptance: new AcceptanceField( 'ehp-form' ),
 		};
 
-		elementor.addControlView( 'Fields_map', FieldsMapControl );
-		elementor.addControlView( 'form-fields-repeater', FieldsRepeaterControl );
+		elementor.addControlView( 'ehp_fields_map', FieldsMapControl );
+		elementor.addControlView( 'ehp_forms_fields_repeater', FieldsRepeaterControl );
 
 		if ( typeof elementorPromotionsData !== 'undefined' ) {
 			elementorPromotionsData.collect_submit = window.ehpFormsPromotionData;

@@ -25,6 +25,7 @@ export default class HelloPlusHeaderHandler extends elementorModules.frontend.ha
 				always: 'always',
 				none: 'none',
 				no: 'no',
+				submenuCloseDelay: 500,
 			},
         };
     }
@@ -53,7 +54,38 @@ export default class HelloPlusHeaderHandler extends elementorModules.frontend.ha
 
 		if ( this.elements.dropdownToggle.length > 0 ) {
 			this.elements.dropdownToggle.forEach( ( menuItem ) => {
-				menuItem.addEventListener( 'click', ( event ) => this.toggleSubMenu( event ) );
+				const menuItemParent = menuItem.closest( '.menu-item-has-children' );
+				if ( menuItemParent ) {
+					menuItemParent.addEventListener( 'mouseenter', ( event ) => {
+						if ( ! this.isResponsiveBreakpoint() ) {
+							this.openSubMenuOnHover( event );
+						}
+					} );
+					menuItemParent.addEventListener( 'mouseleave', ( event ) => {
+						if ( ! this.isResponsiveBreakpoint() ) {
+							this.closeSubMenuOnHover( event );
+						}
+					} );
+					menuItemParent.addEventListener( 'mousemove', ( event ) => {
+						if ( ! this.isResponsiveBreakpoint() ) {
+							this.trackMousePosition( event );
+						}
+					} );
+
+					menuItem.addEventListener( 'click', ( event ) => {
+						if ( this.isResponsiveBreakpoint() ) {
+							event.preventDefault();
+							this.toggleSubMenu( event );
+						}
+					} );
+
+					menuItem.addEventListener( 'keydown', ( event ) => {
+						if ( 'Enter' === event.key || ' ' === event.key ) {
+							event.preventDefault();
+							this.toggleSubMenu( event );
+						}
+					} );
+				}
 			} );
 		}
 
@@ -97,6 +129,12 @@ export default class HelloPlusHeaderHandler extends elementorModules.frontend.ha
 		this.initDefaultState();
 		this.scrollTimeout = null;
 		this.originalBodyOverflow = document.body.style.overflow;
+		this.submenuCloseTimeouts = new Map();
+		this.mousePositions = new Map();
+		this.hasFirstScrollOccurred = document.body.classList.contains( 'ehp-body-after-scroll' );
+		this.userHasInteracted = false;
+		this.setupUserInteractionListeners();
+		this.checkInitialScrollPosition();
 	}
 
 	initDefaultState() {
@@ -142,6 +180,10 @@ export default class HelloPlusHeaderHandler extends elementorModules.frontend.ha
 	}
 
 	onScroll() {
+		if ( ! this.hasFirstScrollOccurred && this.userHasInteracted ) {
+			this.handleFirstScroll();
+		}
+
 		const { scrollUp, always, none } = this.getSettings( 'constants' );
 
 		if ( this.scrollTimeout ) {
@@ -202,20 +244,62 @@ export default class HelloPlusHeaderHandler extends elementorModules.frontend.ha
 			if ( none !== this.getDataScrollBehavior() ) {
 				if ( ! floatingBars.classList.contains( 'is-sticky' ) && ! floatingBars.classList.contains( 'is-hidden' ) ) {
 					floatingBars.style.marginBottom = `${ mainHeight }px`;
-					document.body.style.paddingTop = '0';
+					document.documentElement.style.setProperty( '--ehp-body-padding-top', '0px' );
 				} else if ( floatingBars.classList.contains( 'is-sticky' ) ) {
 					const floatingBarsHeight = floatingBars?.offsetHeight || 0;
-					document.body.style.paddingTop = `${ mainHeight + floatingBarsHeight }px`;
+					document.documentElement.style.setProperty( '--ehp-body-padding-top', `${ mainHeight + floatingBarsHeight }px` );
 				}
 			}
 		} else {
-			document.body.style.paddingTop = `${ mainHeight }px`;
+			document.documentElement.style.setProperty( '--ehp-body-padding-top', `${ mainHeight }px` );
+		}
+	}
+
+	setupUserInteractionListeners() {
+		const interactionEvents = [ 'mousedown', 'touchstart', 'keydown', 'wheel' ];
+
+		const markUserInteraction = () => {
+			this.userHasInteracted = true;
+			interactionEvents.forEach( ( event ) => {
+				document.removeEventListener( event, markUserInteraction, { passive: true } );
+			} );
+		};
+
+		interactionEvents.forEach( ( event ) => {
+			document.addEventListener( event, markUserInteraction, { passive: true } );
+		} );
+	}
+
+	checkInitialScrollPosition() {
+		const checkScrollState = () => {
+			if ( ! this.hasFirstScrollOccurred && window.scrollY > 0 ) {
+				this.handleFirstScroll();
+			}
+		};
+
+		if ( 'complete' === document.readyState ) {
+			checkScrollState();
+			return;
+		}
+
+		window.addEventListener( 'load', checkScrollState );
+	}
+
+	handleFirstScroll() {
+		if ( ! document.body.classList.contains( 'ehp-body-after-scroll' ) ) {
+			document.body.classList.add( 'ehp-body-after-scroll' );
+			this.hasFirstScrollOccurred = true;
 		}
 	}
 
 	handleAriaAttributesDropdown() {
+		const selectors = this.getSettings( 'selectors' );
 		this.elements.dropdownToggle.forEach( ( item ) => {
-			item.nextElementSibling.setAttribute( 'aria-hidden', 'true' );
+			const menuItem = item.closest( '.menu-item-has-children' );
+			const submenu = menuItem ? menuItem.querySelector( selectors.dropdown ) : null;
+			if ( submenu ) {
+				submenu.setAttribute( 'aria-hidden', 'true' );
+			}
 		} );
 	}
 
@@ -248,27 +332,125 @@ export default class HelloPlusHeaderHandler extends elementorModules.frontend.ha
 		}
 	}
 
+	openSubMenuOnHover( event ) {
+		const selectors = this.getSettings( 'selectors' );
+		const menuItem = event.currentTarget;
+		const subMenu = menuItem.querySelector( selectors.dropdown );
+		const toggleButton = menuItem.querySelector( selectors.dropdownToggle );
+
+		if ( ! subMenu || ! toggleButton ) {
+			return;
+		}
+
+		if ( this.submenuCloseTimeouts.has( subMenu ) ) {
+			clearTimeout( this.submenuCloseTimeouts.get( subMenu ) );
+			this.submenuCloseTimeouts.delete( subMenu );
+		}
+
+		this.closeAllOtherSubMenus( toggleButton );
+		this.openSubMenu( toggleButton, subMenu );
+
+		subMenu.addEventListener( 'mouseenter', () => {
+			if ( this.submenuCloseTimeouts.has( subMenu ) ) {
+				clearTimeout( this.submenuCloseTimeouts.get( subMenu ) );
+				this.submenuCloseTimeouts.delete( subMenu );
+			}
+		} );
+
+		subMenu.addEventListener( 'mouseleave', () => {
+			this.closeSubMenu( toggleButton, subMenu );
+		} );
+	}
+
+	trackMousePosition( event ) {
+		const menuItem = event.currentTarget;
+		const currentTime = Date.now();
+		const currentY = event.clientY;
+
+		if ( ! this.mousePositions.has( menuItem ) ) {
+			this.mousePositions.set( menuItem, { y: currentY, time: currentTime } );
+			return;
+		}
+
+		const lastPosition = this.mousePositions.get( menuItem );
+		this.mousePositions.set( menuItem, { y: currentY, time: currentTime, lastY: lastPosition.y, lastTime: lastPosition.time } );
+	}
+
+	isMouseMovingDown( menuItem ) {
+		const position = this.mousePositions.get( menuItem );
+		if ( ! position || ! position.lastY ) {
+			return false;
+		}
+
+		const timeDiff = position.time - position.lastTime;
+		const yDiff = position.y - position.lastY;
+
+		return timeDiff > 0 && yDiff > 0;
+	}
+
+	closeSubMenuOnHover( event ) {
+		const selectors = this.getSettings( 'selectors' );
+		const menuItem = event.currentTarget;
+		const subMenu = menuItem.querySelector( selectors.dropdown );
+		const toggleButton = menuItem.querySelector( selectors.dropdownToggle );
+
+		if ( ! subMenu || ! toggleButton ) {
+			return;
+		}
+
+		if ( this.submenuCloseTimeouts.has( subMenu ) ) {
+			clearTimeout( this.submenuCloseTimeouts.get( subMenu ) );
+		}
+
+		const constants = this.getSettings( 'constants' );
+		const isMovingDown = this.isMouseMovingDown( menuItem );
+		const delay = isMovingDown ? constants.submenuCloseDelay : 0;
+
+		this.submenuCloseTimeouts.set( subMenu, setTimeout( () => {
+			const isHoveringSubmenu = subMenu.matches( ':hover' ) || subMenu.querySelector( ':hover' );
+			if ( ! isHoveringSubmenu ) {
+				this.closeSubMenu( toggleButton, subMenu );
+			}
+			this.submenuCloseTimeouts.delete( subMenu );
+		}, delay ) );
+
+		this.mousePositions.delete( menuItem );
+	}
+
 	toggleSubMenu( event ) {
 		event.preventDefault();
-		const target = event.target;
-		const isSvg = target.classList.contains( 'ehp-header__submenu-toggle-icon' );
-		const targetItem = isSvg ? target.parentElement : target;
-		const subMenu = isSvg ? target.parentElement.nextElementSibling : target.nextElementSibling;
+		const selectors = this.getSettings( 'selectors' );
+		const toggleButton = event.target.closest( selectors.dropdownToggle );
+		if ( ! toggleButton ) {
+			return;
+		}
+
+		const menuItem = toggleButton.closest( '.menu-item-has-children' );
+		const subMenu = menuItem ? menuItem.querySelector( selectors.dropdown ) : null;
+
+		if ( ! subMenu ) {
+			return;
+		}
+
 		const ariaHidden = subMenu.getAttribute( 'aria-hidden' );
 
 		if ( 'true' === ariaHidden ) {
-			this.closeAllOtherSubMenus( targetItem );
-			this.openSubMenu( targetItem, subMenu );
+			this.closeAllOtherSubMenus( toggleButton );
+			this.openSubMenu( toggleButton, subMenu );
 		} else {
-			this.closeSubMenu( targetItem, subMenu );
+			this.closeSubMenu( toggleButton, subMenu );
 		}
 	}
 
 	closeAllOtherSubMenus( currentTargetItem ) {
+		const selectors = this.getSettings( 'selectors' );
 		Array.from( this.elements.dropdownToggle ).forEach( ( toggle ) => {
 			if ( toggle !== currentTargetItem && 'true' === toggle.getAttribute( 'aria-expanded' ) ) {
-				const menu = toggle.nextElementSibling;
-				this.closeSubMenu( toggle, menu );
+				const menuItem = toggle.closest( '.menu-item-has-children' );
+				const menu = menuItem ? menuItem.querySelector( selectors.dropdown ) : null;
+				if ( menu ) {
+					this.closeSubMenu( toggle, menu );
+				}
 			}
 		} );
 	}

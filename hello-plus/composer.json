@@ -5,7 +5,7 @@
 		"dealerdirect/phpcodesniffer-composer-installer": "^v1.0.0",
 		"wp-coding-standards/wpcs": "^3.1.0",
 		"phpunit/phpunit": "9.5.14",
-		"elementor/elementor-editor-testing": "0.0.3",
+		"elementor/elementor-editor-testing": "^0.0.4",
 		"johnpbloch/wordpress-core": "^6.8.1",
 		"php-stubs/wordpress-stubs": "^6.8.1",
 		"elementor/eunit": "^0.0.10",
@@ -25,8 +25,8 @@
 		}
 	},
 	"scripts": {
-		"lint": "vendor/bin/phpcs --standard=./phpcs.xml --ignore=node_modules,vendor,build .",
-		"lint:fix": "vendor/bin/phpcbf --ignore=node_modules,vendor,build .",
+		"lint": "vendor/bin/phpcs --standard=./phpcs.xml --ignore=node_modules,vendor,assets,tmp .",
+		"lint:fix": "vendor/bin/phpcbf --ignore=node_modules,vendor,assets,tmp .",
 		"test": "phpunit --testsuite hello-plus",
 		"test:install": "bash ./bin/install-wp-tests-local.sh",
 		"coverage": "composer run coverage:test && composer run coverage:check",

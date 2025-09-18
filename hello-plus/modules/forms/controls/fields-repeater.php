@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class Fields_Repeater extends Control_Repeater {
 
-	const CONTROL_TYPE = 'form-fields-repeater';
+	const CONTROL_TYPE = 'ehp_forms_fields_repeater';
 
 	public function get_type() {
 		return self::CONTROL_TYPE;

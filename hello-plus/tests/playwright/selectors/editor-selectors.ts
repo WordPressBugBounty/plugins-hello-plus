@@ -240,6 +240,11 @@ const EditorSelectors = {
 			advanced: '#advanced',
 		},
 	},
+	form: {
+		doubleOptInInp: 'input[data-setting="mailchimp_double_opt_in"]',
+		removeActionSpan: 'span[role="presentation"]',
+		removeFieldBtn: '.elementor-repeater-tool-remove',
+	},
 };
 
 export default EditorSelectors;

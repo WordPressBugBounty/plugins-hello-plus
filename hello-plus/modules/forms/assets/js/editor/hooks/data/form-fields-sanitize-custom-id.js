@@ -6,7 +6,7 @@ export class FormFieldsSanitizeCustomId extends $e.modules.hookData.Dependency {
 	}
 
 	getId() {
-		return 'elementor-pro-forms-fields-sanitize-custom-id';
+		return 'ehp-forms-fields-sanitize-custom-id';
 	}
 
 	getContainerType() {

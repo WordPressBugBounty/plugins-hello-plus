@@ -124,4 +124,33 @@ export type ContainerPreset =
 	| 'c100-c50-50'
 	| '33-33-33-33-33-33'
 	| '33-33-33-33-66'
-	| '66-33-33-66'
+	| '66-33-33-66';
+
+export type FieldType =
+	| 'text'
+	| 'email'
+	| 'textarea'
+	| 'url'
+	| 'tel'
+	| 'radio'
+	| 'select'
+	| 'checkbox'
+	| 'acceptance'
+	| 'number'
+	| 'date'
+	| 'time'
+	| 'upload'
+	| 'password'
+	| 'html'
+	| 'hidden'
+	| 'recaptcha'
+	| 'recaptcha_v3'
+	| 'honeypot'
+	| 'step';
+
+export type Field = {
+	type?: FieldType;
+	text?: string;
+	placeholder?: string;
+	label?: string;
+};

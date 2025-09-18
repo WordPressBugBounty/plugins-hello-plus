@@ -22,7 +22,8 @@ export default class BasePage {
 		 */
 		this.testInfo = testInfo;
 
-		const { baseURL, proxy } = this.testInfo.config.projects[ 0 ].use;
+		const projectConfig = this.testInfo.config?.projects?.[ 0 ]?.use || {};
+		const { baseURL, proxy } = projectConfig;
 
 		// If wordpress is not located on the domain's top-level (e.g:  http://local.host/test-wordpress ), playwright's `baseURL` cannot handle it.
 		if ( proxy ) {

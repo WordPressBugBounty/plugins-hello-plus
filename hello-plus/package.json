@@ -3,7 +3,7 @@
 	"slug": "hello-plus",
 	"homepage": "https://elementor.com/",
 	"description": "A quick-start theme for Elementor.",
-	"version": "1.7.6",
+	"version": "1.7.7",
 	"scripts": {
 		"start": "wp-scripts start",
 		"build:dev": "composer update && composer install && wp-scripts build",
@@ -18,11 +18,13 @@
 		"test:playwright:headless": "CI=1 playwright test -c tests/playwright/playwright.config.ts",
 		"test:playwright:debug": "npm run test:playwright -- --debug",
 		"test:setup:playwright": "wp-env run cli bash hello-plus-config/setup.sh && wp-env run tests-cli bash hello-plus-config/setup.sh",
-		"test:setup:chromium": "npx playwright install chromium"
+		"test:setup:chromium": "npx playwright install chromium",
+		"wp-env:start": "wp-env start",
+		"wp-env:stop": "wp-env stop"
 	},
 	"devDependencies": {
 		"@elementor/wp-lite-env": "^0.0.20",
-		"@playwright/test": "1.52.0",
+		"@playwright/test": "1.54.2",
 		"@typescript-eslint/parser": "^6.21.0",
 		"@wordpress/eslint-plugin": "^21.6.0",
 		"@wordpress/scripts": "^30.18.0",

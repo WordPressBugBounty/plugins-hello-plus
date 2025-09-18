@@ -15,6 +15,7 @@ use HelloPlus\Classes\Widget_Utils;
 class Render_Navigation extends Render_Base {
 
 	private int $nav_menu_index = 0;
+
 	private function get_and_advance_nav_menu_index(): int {
 		return $this->nav_menu_index++;
 	}
@@ -254,18 +255,20 @@ class Render_Navigation extends Render_Base {
 	public function handle_walker_menu_start_el( $item_output, $item ) {
 
 		if ( in_array( 'menu-item-has-children', $item->classes, true ) ) {
-			$submenu_icon = $this->settings['navigation_menu_submenu_icon'];
+			$submenu_icon = $this->settings['navigation_menu_submenu_icon'] ?? null;
 
-			$svg_icon = Icons_Manager::try_get_icon_html( $submenu_icon,
-				[
-					'aria-hidden' => 'true',
-					'class' => $this->get_class_name( '__submenu-toggle-icon' ),
-				]
-			);
+			$svg_icon = Icons_Manager::try_get_icon_html( $submenu_icon, [
+				'aria-hidden' => 'true',
+				'class' => $this->get_class_name( '__submenu-toggle-icon' ),
+			] );
 
 			$button_classes = $this->get_class_name( '__item' ) . ' ' . $this->get_class_name( '__dropdown-toggle' );
+			$aria_label = sprintf( esc_html__( 'Toggle submenu for %s', 'hello-plus' ), $item->title );
 
-			$item_output = '<button type="button" class="' . $button_classes . '" aria-expanded="false">' . esc_html( $item->title ) . $svg_icon . '</button>';
+			$toggle_button = '<button type="button" class="' . $button_classes . '" aria-expanded="false" aria-label="' . esc_attr( $aria_label ) . '">' . $svg_icon . '</button>';
+
+			// Preserve original anchor output and append a dedicated submenu toggle button.
+			$item_output .= $toggle_button;
 		}
 
 		return $item_output;

@@ -7,7 +7,7 @@ test.describe( 'Woocommerce compatibility tests', () => {
 			await page.goto( '/product/beanie-with-logo/' );
 
 			await expect( page.locator( '#main > .product' ) ).toBeVisible();
-			const button = page.getByRole( 'button', { name: 'Add to Cart' } );
+			const button = page.getByRole( 'button', { name: 'Add to Cart' } ).first();
 			await expect( button ).toBeVisible();
 			await button.click();
 			await expect( page.locator( '.woocommerce-message' ) ).toBeVisible();

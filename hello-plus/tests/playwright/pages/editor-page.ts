@@ -113,6 +113,24 @@ export default class EditorPage extends BasePage {
 		}, templateData );
 	}
 
+	async stabilizeForScreenshot( page: Page, editor?: any ): Promise<void> {
+		try {
+			if ( editor?.removeWpAdminBar ) {
+				await editor.removeWpAdminBar();
+			}
+		} catch {
+		}
+		await page.addStyleTag( { content: '*{transition:none!important;animation:none!important}*,*:before,*:after{transition:none!important;animation:none!important}' } )
+			.catch( () => {} );
+		await page.evaluate( async () => {
+			if ( document.fonts && 'ready' in document.fonts ) {
+				await ( document.fonts as FontFaceSet ).ready;
+			}
+		} ).catch( () => {} );
+		await page.waitForLoadState( 'networkidle' ).catch( () => {} );
+		await page.waitForTimeout( 100 );
+	}
+
 	/**
 	 * Remove all the content from the page.
 	 *
@@ -515,7 +533,7 @@ export default class EditorPage extends BasePage {
 	 */
 	async setSelect2ControlValue( controlId: string, value: string, exactMatch: boolean = true ): Promise<void> {
 		await this.page.locator( `.elementor-control-${ controlId } .select2:not( .select2-container--disabled )` ).click();
-		await this.page.locator( '.select2-search--dropdown input[type="search"]' ).fill( value );
+		await this.page.locator( '.select2-search--dropdown input[type="search"]' ).first().fill( value );
 
 		if ( exactMatch ) {
 			await this.page.locator( `.select2-results__option:text-is("${ value }")` ).first().click();
@@ -549,7 +567,33 @@ export default class EditorPage extends BasePage {
 	 * @return {Promise<void>}
 	 */
 	async setChooseControlValue( controlId: string, icon: string ): Promise<void> {
-		await this.page.locator( `.elementor-control-${ controlId } .${ icon }` ).click();
+		await this.page.locator( `.elementor-control-${ controlId } input[value="${ icon }"]` ).click();
+	}
+
+	/**
+	 * Set choose-image control value (custom Choose_Img_Control).
+	 *
+	 * @param {string} controlId - The control to set the value to.
+	 * @param {string} value     - The option value to choose (e.g., 'focus').
+	 *
+	 * @return {Promise<void>}
+	 */
+	async setPresetImageControlValue( controlId: string, value: string ): Promise<void> {
+		const control = this.page.locator( `.elementor-control-${ controlId }` );
+		await control.locator( '.elementor-choices.elementor-choices-img' ).first().waitFor();
+		const choice = control.locator( '.elementor-choices-element' ).filter( { has: this.page.locator( `img.elementor-choices-image[data-hover="${ value }"]` ) } ).first();
+		await choice.scrollIntoViewIfNeeded();
+		await choice.locator( 'label.elementor-choices-label' ).first().click();
+	}
+
+	async setIconControlValueByName( controlId: string, iconName: string ): Promise<void> {
+		const control = this.page.locator( `.elementor-control-${ controlId }` );
+		await control.locator( '.elementor-control-icons--inline__icon' ).first().click();
+		await this.page.locator( '#elementor-icons-manager-modal' ).waitFor();
+		const item = this.page.locator( 'div' ).filter( { hasText: new RegExp( `^${ iconName }$` ) } ).first();
+		await item.waitFor();
+		await item.click();
+		await this.page.getByRole( 'button', { name: 'Insert' } ).click();
 	}
 
 	/**
@@ -698,6 +742,25 @@ export default class EditorPage extends BasePage {
 		await mapText.evaluate( ( element ) => element.style.opacity = '0' );
 		await mapInset.evaluate( ( element ) => element.style.opacity = '0' );
 		await mapControls.evaluate( ( element ) => element.style.opacity = '0' );
+	}
+
+	async hideContactMapControls(): Promise<void> {
+		await this.getPreviewFrame().waitForSelector( '.ehp-contact__map iframe' );
+
+		const mapFrame = this.getPreviewFrame().frameLocator( '.ehp-contact__map iframe' ),
+			mapText = mapFrame.locator( '.gm-style iframe + div + div' ),
+			mapInset = mapFrame.locator( 'button.gm-inset-map.gm-inset-light' ),
+			mapControls = mapFrame.locator( '.gmnoprint.gm-bundled-control.gm-bundled-control-on-bottom' );
+
+		if ( await mapText.count() > 0 ) {
+			await mapText.evaluate( ( element ) => element.style.opacity = '0' );
+		}
+		if ( await mapInset.count() > 0 ) {
+			await mapInset.evaluate( ( element ) => element.style.opacity = '0' );
+		}
+		if ( await mapControls.count() > 0 ) {
+			await mapControls.evaluate( ( element ) => element.style.opacity = '0' );
+		}
 	}
 
 	/**
@@ -985,26 +1048,51 @@ export default class EditorPage extends BasePage {
 	 * @return {Promise<void>}
 	 */
 	async publishAndViewPage(): Promise<void> {
-		const hasTopBar = await this.hasTopBar();
-
 		await this.publishPage();
-
-		if ( hasTopBar ) {
-			await this.clickTopBarItem( TopBarSelectors.saveOptions );
-			await this.page.getByRole( 'menuitem', { name: 'View Page' } ).click();
-			const pageId = await this.getPageId();
-			await this.page.goto( `/?p=${ pageId }` );
-		} else {
-			await this.openMenuPanel( 'view-page' );
-		}
-
-		await this.page.waitForLoadState();
+		await this.viewPage();
 	}
 
 	async viewPage() {
 		const pageId = await this.getPageId();
+
+		if ( ! pageId ) {
+			return;
+		}
+
 		await this.page.goto( `/?p=${ pageId }` );
 		await this.page.waitForLoadState();
+	}
+
+	/**
+	 * Get a control value by index with modulo cycling for array access.
+	 *
+	 * @param {Array}  controlValues - Array of control values.
+	 * @param {number} loopIndex     - The loop index.
+	 *
+	 * @return {any} The control value at the calculated index.
+	 */
+	getControlValueByIndex( controlValues: any[], loopIndex: number ): any {
+		return controlValues[ loopIndex % controlValues.length ];
+	}
+
+	/**
+	 * Set background color control value with proper visibility check.
+	 * Ensures the color picker is opened before setting the color value.
+	 *
+	 * @param {string} backgroundControlId - The background control ID (e.g., 'background_background').
+	 * @param {string} colorControlId      - The color control ID (e.g., 'background_color').
+	 * @param {string} colorValue          - The color value to set.
+	 *
+	 * @return {Promise<void>}
+	 */
+	async setBackgroundColorControlValue( backgroundControlId: string, colorControlId: string, colorValue: string ): Promise<void> {
+		const colorControl = this.page.locator( `.elementor-control-${ colorControlId }` );
+
+		if ( ! await colorControl.isVisible() ) {
+			await this.setChooseControlValue( backgroundControlId, 'eicon-paint-brush' );
+		}
+
+		await this.setColorControlValue( colorControlId, colorValue );
 	}
 
 	/**
@@ -1031,8 +1119,11 @@ export default class EditorPage extends BasePage {
 	 *
 	 * @return {Promise<string>} The ID of the current page.
 	 */
-	async getPageId(): Promise<string> {
-		return await this.page.evaluate( () => elementor.config.initialDocument.id );
+	async getPageId(): Promise<string | null> {
+		return await this.page.evaluate( () => {
+			const urlParams = new URLSearchParams( window.location.search );
+			return urlParams.get( 'post' );
+		} );
 	}
 
 	/**
@@ -1395,7 +1486,8 @@ export default class EditorPage extends BasePage {
 			await this.page.locator( '#doaction' ).click();
 		}
 
-		await this.page.getByRole( 'link', { name: 'Add New Hello+ Header' } ).click();
+		await this.page.getByRole( 'link', { name: 'Add New Template' } ).click();
+		await this.page.selectOption( '#elementor-new-template__form__template-type', 'ehp-header' );
 		await this.page.getByRole( 'button', { name: 'Create Template' } ).click();
 		await this.ensurePanelLoaded();
 		await this.page.getByText( 'Templates', { exact: true } ).click();
@@ -1404,7 +1496,10 @@ export default class EditorPage extends BasePage {
 		await this.page.getByText( 'Select File' ).click();
 		await this.page.locator( EditorSelectors.media.imageInp ).setInputFiles( filePath );
 		await this.page.getByRole( 'button', { name: 'Continue' } ).click();
-		await this.page.getByRole( 'button', { name: 'Enable and Import' } ).click();
+		const enableImportBtn = this.page.getByRole( 'button', { name: 'Enable and Import' } );
+		if ( await enableImportBtn.count() > 0 ) {
+			await enableImportBtn.click();
+		}
 		await this.page.getByRole( 'button', { name: 'Insert' } ).first().click();
 	}
 

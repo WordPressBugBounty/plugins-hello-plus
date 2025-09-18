@@ -2,12 +2,9 @@
 namespace HelloPlus\Includes;
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly.
+	exit;
 }
 
-/**
- * class Utils
- **/
 class Utils {
 
 	public static function elementor(): ?\Elementor\Plugin {
@@ -20,6 +17,9 @@ class Utils {
 
 	public static function are_we_on_elementor_domains(): bool {
 		$current_domain = filter_input( INPUT_SERVER, 'HTTP_HOST', FILTER_SANITIZE_URL );
+		if ( null === $current_domain ) {
+			return false;
+		}
 		$allowed_domains = [
 			'elementor.com',
 			'elementor.red',
@@ -81,7 +81,6 @@ class Utils {
 
 	public static function get_update_elementor_message(): string {
 		return sprintf(
-		/* translators: %s: Elementor version number. */
 			__( 'Elementor plugin version needs to be at least %s for Hello Plus to Work. Please update.', 'hello-plus' ),
 			HELLOPLUS_MIN_ELEMENTOR_VERSION,
 		);
@@ -248,5 +247,27 @@ class Utils {
 		}
 
 		return false;
+	}
+
+	public static function has_at_least_one_kit() {
+		static $is_setup_wizard_completed = null;
+
+		if ( ! class_exists( '\Elementor\App\Modules\ImportExport\Processes\Revert' ) ) {
+			return false;
+		}
+
+		if ( ! is_null( $is_setup_wizard_completed ) ) {
+			return $is_setup_wizard_completed;
+		}
+
+		$sessions = \Elementor\App\Modules\ImportExport\Processes\Revert::get_import_sessions();
+
+		if ( ! $sessions ) {
+			return false;
+		}
+
+		$last_session = end( $sessions );
+
+		return ! empty( $last_session );
 	}
 }

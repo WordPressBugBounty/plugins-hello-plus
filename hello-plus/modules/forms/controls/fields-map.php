@@ -21,7 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Fields_Map extends Control_Repeater {
 
-	const CONTROL_TYPE = 'fields_map';
+	const CONTROL_TYPE = 'ehp_fields_map';
 
 	public function get_type() {
 		return self::CONTROL_TYPE;

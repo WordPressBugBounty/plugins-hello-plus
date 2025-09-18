@@ -57,7 +57,13 @@ class Contact extends Widget_Base {
 	}
 
 	public function get_icon(): string {
-		return 'eicon-email-field';
+		return $this->has_required_elementor_version() ? 'eicon-contact' : 'eicon-email-field';
+	}
+
+	protected function has_required_elementor_version(): bool {
+		$elementor_version = defined( 'ELEMENTOR_VERSION' ) ? ELEMENTOR_VERSION : '0.0.0';
+
+		return version_compare( $elementor_version, '3.32.0', '>=' );
 	}
 
 	public function get_style_depends(): array {
